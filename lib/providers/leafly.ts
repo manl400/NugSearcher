@@ -2,6 +2,9 @@ import * as cheerio from "cheerio";
 import { ProviderAdapter } from "@/lib/providers/base";
 import { inferType, slugify, titleCase } from "@/lib/utils";
 
+const DEFAULT_BROWSER_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36";
+
 function parseNumber(input?: string): number | undefined {
   if (!input) return undefined;
   const cleaned = input.replace(/,/g, "").match(/\d+(\.\d+)?/);
@@ -26,7 +29,7 @@ export const leaflyProvider: ProviderAdapter = {
       const slug = slugify(query);
       const url = `https://www.leafly.com/strains/${slug}`;
       const res = await fetch(url, {
-        headers: { "User-Agent": process.env.LEAFLY_USER_AGENT || "Mozilla/5.0" },
+        headers: { "User-Agent": process.env.LEAFLY_USER_AGENT || DEFAULT_BROWSER_UA },
         next: { revalidate: 21600 },
       });
       if (!res.ok) return null;
@@ -42,11 +45,7 @@ export const leaflyProvider: ProviderAdapter = {
       const cbd = parseNumber(bodyText.match(/CBD\s*(\d+(?:\.\d+)?)/i)?.[1]);
       const typeText = bodyText.match(/(Indica|Sativa|Hybrid)/i)?.[1];
 
-      const effects = textList($, [
-        "a[href*='effects'] span",
-        "[data-testid='tag-pill'] span",
-        "button span"
-      ]).slice(0, 8);
+      const effects = textList($, ["a[href*='effects'] span", "[data-testid='tag-pill'] span", "button span"]).slice(0, 8);
 
       const sideEffects = ["dry mouth", "dry eyes", "anxiety", "paranoia", "dizzy"].filter((term) =>
         bodyText.toLowerCase().includes(term)

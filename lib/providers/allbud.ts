@@ -2,6 +2,9 @@ import * as cheerio from "cheerio";
 import { ProviderAdapter } from "@/lib/providers/base";
 import { inferType, titleCase } from "@/lib/utils";
 
+const DEFAULT_BROWSER_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36";
+
 function extractNumber(input?: string): number | undefined {
   if (!input) return undefined;
   const match = input.replace(/,/g, "").match(/\d+(\.\d+)?/);
@@ -14,7 +17,7 @@ export const allBudProvider: ProviderAdapter = {
     try {
       const searchUrl = `https://www.allbud.com/marijuana-strains/search?sort=alphabet&letter=&q=${encodeURIComponent(query)}`;
       const searchRes = await fetch(searchUrl, {
-        headers: { "User-Agent": process.env.ALLBUD_USER_AGENT || "Mozilla/5.0" },
+        headers: { "User-Agent": process.env.ALLBUD_USER_AGENT || DEFAULT_BROWSER_UA },
         next: { revalidate: 21600 },
       });
       if (!searchRes.ok) return null;
@@ -30,7 +33,7 @@ export const allBudProvider: ProviderAdapter = {
       if (!url) return null;
 
       const pageRes = await fetch(url, {
-        headers: { "User-Agent": process.env.ALLBUD_USER_AGENT || "Mozilla/5.0" },
+        headers: { "User-Agent": process.env.ALLBUD_USER_AGENT || DEFAULT_BROWSER_UA },
         next: { revalidate: 21600 },
       });
       if (!pageRes.ok) return null;
