@@ -28,3 +28,8 @@ Open `http://localhost:3000`
 - Scraping adapters are fallbacks and may break if page structure changes.
 - Use only data sources you are authorized to access.
 - For production, add rate limiting and caching.
+
+
+## Security note
+
+This project is pinned to **Next.js 16.1.6** to avoid Vercel deployment failures caused by CVE-2025-66478 checks against older vulnerable versions.
